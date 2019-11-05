@@ -1,0 +1,16 @@
+<zk>
+	<div apply="com.apromore.CSVExporter">
+
+
+
+
+
+        <vbox vflex="1" hflex="1" spacing="20px">
+
+            <textbox id="fileLoc" height="50px" width="500px" placeholder="Place XES file location on your machine!"/>
+
+
+            <button id="toCSVButton" label="Import XES file" sclass="btn btn-light" />
+        </vbox>
+    </div>
+</zk>
