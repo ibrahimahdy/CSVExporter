@@ -12,7 +12,7 @@ public class CSVExporter extends SelectorComposer<Component> {
     @Wire
     Textbox fileLoc;
 
-    private static XesToCsv xesCsv = new XesToCsv();
+    private static CSVExporterPlugin xesCsv = new CSVExporterPlugin();
 
     @Listen("onClick = #toCSVButton")
     public void toCSV() throws Exception{
