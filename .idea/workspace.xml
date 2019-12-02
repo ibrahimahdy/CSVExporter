@@ -2,15 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="eda77d58-3a43-4623-ad4c-fbca9c35bc56" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/OpenXES-20190409.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/apromore/CSVExporterPlugin.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/apromore/LogModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/apromore/CSVExporter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/apromore/CSVExporter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/apromore/CSVExporter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/apromore/CSVExporter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/apromore/XesToCsv.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/apromore/XesToCsv.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/apromore/CSVExporterPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/apromore/CSVExporterPlugin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/apromore/LogModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/apromore/LogModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/apromore/CSVExporterPlugin.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/apromore/CSVExporterPlugin.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/apromore/LogModel.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/apromore/LogModel.class" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -117,7 +113,7 @@
       <workItem from="1574197040631" duration="526000" />
       <workItem from="1574677662519" duration="1438000" />
       <workItem from="1574690353571" duration="788000" />
-      <workItem from="1575284599949" duration="17073000" />
+      <workItem from="1575284599949" duration="25996000" />
     </task>
     <servers />
   </component>
