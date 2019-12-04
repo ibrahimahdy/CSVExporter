@@ -20,6 +20,8 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.deckfour.xes.in.XUniversalParser;
@@ -47,8 +49,8 @@ public class CSVExporterPlugin {
             if(myLog.size()!=0){
                 List<XTrace> traces = myLog.iterator().next();
                 List<String> attributes = getAttributeNames(traces);
-                List<LogModel> log = createModel(traces, attributes);
-                writeCSVFile(log);
+                List<LogModel> log = createModel(traces);
+                writeCSVFile(log, attributes);
             }
 
         }
@@ -74,125 +76,113 @@ public class CSVExporterPlugin {
     }
 
 
-    private List<LogModel> createModel(List<XTrace> traces, List<String> attributes){
+    private List<LogModel> createModel(List<XTrace> traces){
         String caseID;
         String activity;
-        HashMap<String, String> literalValues;
-        HashMap<String, Date> timestampValues;
-        HashMap<String, Boolean> booleanValues;
-        HashMap<String, Long> discreteValues;
-        HashMap<String, Double> continuousValues;
+        HashMap<String, String> otherAttributes;
 
         List<LogModel> logData = new ArrayList<LogModel>();
-        XAttributeLiteral attHolder;
+        String attributeValue;
 
         for (XTrace myTrace: traces) {
-            literalValues = new HashMap<String, String>();
-            timestampValues = new HashMap<String, Date>();
-            booleanValues = new HashMap<String, Boolean>();
-            discreteValues = new HashMap<String, Long>();
-            continuousValues = new HashMap<String, Double>();
-
-
             caseID = activity = "";
+            otherAttributes = new HashMap<String, String>();
+
             for (Map.Entry<String, XAttribute> tAtt : myTrace.getAttributes().entrySet()){
-                attHolder = (XAttributeLiteral)tAtt.getValue();
+
+                attributeValue = getAttributeValue(tAtt.getValue());
                 if(tAtt.getKey().equals("concept:name")){
-                    caseID = attHolder.getValue();
+                    caseID = attributeValue;
                 }else{
-                    literalValues.put(tAtt.getKey(),attHolder.getValue());
+                    otherAttributes.put(tAtt.getKey(), attributeValue);
                 }
             }
 
+            for (XEvent myEvent: myTrace) {
+                for (Map.Entry<String, XAttribute> eAtt : myEvent.getAttributes().entrySet()){
 
-            List<XEvent> events = myTrace;
-            for (XEvent myEvent: events) {
-
-                if(myEvent.getAttributes().containsKey("concept:name")){
-                    activity = ((XAttributeLiteral)myEvent.getAttributes().get("concept:name")).getValue();
-                }
-
-                for (String item: attributes) {
-                    if(myEvent.getAttributes().containsKey(item)){
-                        if(myEvent.getAttributes().get(item) instanceof XAttributeLiteral){
-                            attHolder = (XAttributeLiteral)myEvent.getAttributes().get(item);
-                            literalValues.put(item,attHolder.getValue());
-                        }else if (myEvent.getAttributes().get(item) instanceof XAttributeTimestamp){
-                            timestampValues.put(item,((XAttributeTimestamp)myEvent.getAttributes().get(item)).getValue());
-                        }
-                        else if (myEvent.getAttributes().get(item) instanceof XAttributeBoolean){
-                            booleanValues.put(item,((XAttributeBoolean)myEvent.getAttributes().get(item)).getValue());
-                        }
-                        else if (myEvent.getAttributes().get(item) instanceof XAttributeDiscrete){
-                            discreteValues.put(item,((XAttributeDiscrete)myEvent.getAttributes().get(item)).getValue());
-                        }
-                        else if (myEvent.getAttributes().get(item) instanceof XAttributeContinuous){
-                            continuousValues.put(item,((XAttributeContinuous)myEvent.getAttributes().get(item)).getValue());
-                        }
-
+                    attributeValue = getAttributeValue(eAtt.getValue());
+                    if(eAtt.getKey().equals("concept:name")){
+                        activity = attributeValue;
                     }else{
-                        literalValues.put(item,"");
+                        otherAttributes.put(eAtt.getKey(), attributeValue);
                     }
                 }
 
-                logData.add(new LogModel(caseID, activity, literalValues,timestampValues,booleanValues,discreteValues,continuousValues));
+                logData.add(new LogModel(caseID, activity, otherAttributes));
             }
         }
 
     return  logData;
     }
 
-    private static final String STRING_ARRAY_SAMPLE = "string-array-sample.csv";
-    private void writeCSVFile(List<LogModel> log){
 
+    private String getAttributeValue(XAttribute myAttribute){
+
+        if(myAttribute instanceof XAttributeLiteral){
+            String theValue = ((XAttributeLiteral)myAttribute).getValue();
+            if(theValue.contains(",")) return "\"" + theValue + "\"";
+            return  theValue;
+        }else if (myAttribute instanceof XAttributeTimestamp){
+
+            DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            return df.format(((XAttributeTimestamp)myAttribute).getValue());
+        }
+        else if (myAttribute instanceof XAttributeBoolean){
+            return String.valueOf(((XAttributeBoolean)myAttribute).getValue());
+        }
+        else if (myAttribute instanceof XAttributeDiscrete){
+            return String.valueOf(((XAttributeDiscrete)myAttribute).getValue());
+        }
+        else if (myAttribute instanceof XAttributeContinuous){
+            return  String.valueOf(((XAttributeContinuous)myAttribute).getValue());
+        }
+        return "";
+
+    }
+
+
+
+
+    private void writeCSVFile(List<LogModel> log, List<String> columnsList){
 
         StringBuilder sb = new StringBuilder();
         myFileName= myFileName.replaceFirst("[.][^.]+$", "") + ".csv";
-
         try (PrintWriter writer = new PrintWriter(new File(myFileName))) {
 
-            sb.append("Case ID, Activity");
-            sb = addHeader(sb, "", log.get(0).getTimestampValues().keySet());
-            sb = addHeader(sb, ",", log.get(0).getLiteralValues().keySet());
-            sb = addHeader(sb, ",", log.get(0).getBooleanValues().keySet());
-            sb = addHeader(sb, ",", log.get(0).getDiscreteValues().keySet());
-            sb = addHeader(sb, ",", log.get(0).getContinuousValues().keySet());
+            sb.append("Case ID, Activity,");
+            String prefix = "";
+            for(String one : columnsList){
+                sb.append(prefix);
+                prefix = ",";
+                sb.append(one);
+            }
             sb.append('\n');
 
-            for (LogModel row: log) {
-                sb.append(row.getCaseID());
-                sb.append(",");
-                sb.append(row.getActivity());
-                sb = addHeader(sb, ",", log.get(0).getTimestampValues().values());
-
-
-            }
-            for (int row = 0; row < data.length; row++) {
-
-                for (int col = 0; col < data[row].length; col++) {
+            String columnValue;
+            for (LogModel row : log) {
+                sb.append(row.getCaseID() + "," + row.getActivity()+ ",");
+                prefix = "";
+                for(String one : columnsList){
                     sb.append(prefix);
                     prefix = ",";
-                    sb.append(data[row][col]);
+
+                    columnValue = row.getOtherAttributes().get(one);
+                    if(columnValue != null && columnValue.trim().length() !=0){
+                        sb.append(columnValue);
+                    }else{
+                        sb.append("");
+                    }
                 }
                 sb.append('\n');
             }
 
             writer.write(sb.toString());
             Messagebox.show("Downloaded! to: " + myFileName);
-
         }catch (FileNotFoundException e) {
             Messagebox.show(e.getMessage());
         }
 
-    }
-
-    private StringBuilder addHeader(StringBuilder sb, String prefix, Set<String> keySet){
-        for ( String one : keySet ) {
-            sb.append(prefix);
-            prefix = ",";
-            sb.append(one);
-        }
-        return sb;
     }
 
 }
