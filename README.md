@@ -1,6 +1,6 @@
 # CSV Exporter
 
-CSV Exporter is a web application to Convert [XES](http://xes-standard.org/) files to CSV.
+CSV Exporter is a demo web application to Convert [XES](http://xes-standard.org/) files to CSV.
 Application is created for [Apromore](https://apromore.org/) as a new feature. 
 
 ## Running the Application
